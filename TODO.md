@@ -1,1 +1,0 @@
-Write a website with a blog post about the linear regression algorithm and the math
