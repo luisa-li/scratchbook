@@ -85,24 +85,20 @@ def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float
         
         for epoch in pbar:
             
-            total_loss = 0
-            for i in range(n):
-                # computing loss
-                y_pred = x_train @ w + b
-                loss = loss_func(y_train, y_pred)
-                total_loss += loss
-                # calculating the gradient
-                e = y[1] - x[i] @ w - b
-                db = (-2/n) * np.sum(e)
-                dw = (-2/n) * np.sum(x[i] * e)
-                # update parameters
-                w = w - lr * dw
-                b = b - lr * db
+            # TODO: THIS IS BROKEN PLS FIX WITH THE CORRECT UPDATING RULES WITH THE LINEAR ALGEBRA DERIVATIVES
             
-            # calculate average loss for the epoch
-            avg_loss = total_loss / n
-            pbar.set_postfix_str(f"Epoch: {epoch + 1}, Avg_loss: {avg_loss:.4f}")
-
+            # computing loss
+            y_pred = x_train @ w + b
+            loss = loss_func(y_train, y_pred)
+            # calculating the gradient
+            e = np.square(y_train - y_pred)
+            db = (-2/n) * np.sum(e)
+            dw = (-2/n) * np.sum(e @ x_train)
+            # update parameters
+            w = w - lr * dw
+            b = b - lr * db
+            
+            pbar.set_postfix_str(f"Epoch: {epoch + 1}, Avg_loss: {loss:.4f}")
     
     # validation
     y_pred = x_val @ w + b
