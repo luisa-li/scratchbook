@@ -85,8 +85,6 @@ def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float
         
         for epoch in pbar:
             
-            # TODO: THIS IS BROKEN PLS FIX WITH THE CORRECT UPDATING RULES WITH THE LINEAR ALGEBRA DERIVATIVES
-            
             # computing loss
             y_pred = x_train @ w + b
             loss = loss_func(y_train, y_pred)
