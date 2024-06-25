@@ -19,8 +19,7 @@ def mse(y_true: np.ndarray, y_pred: np.array) -> float:
         The computed MSE loss. 
     """
     assert y_true.shape == y_pred.shape, "`y_true` must have the same shape as `y_pred`."
-    assert y_true.shape[1] == 1, "`y_true` and `y_pred` must be of shape (n, 1)"
-    return np.sum(np.square(np.abs(y_true - y_pred))) / y_true.shape[0]
+    return np.sum(np.square(y_true - y_pred)) / y_true.shape[0]
 
 
 def train_val_split(x: np.ndarray, y: np.ndarray, valid_ratio: float) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: 
@@ -48,9 +47,9 @@ def train_val_split(x: np.ndarray, y: np.ndarray, valid_ratio: float) -> tuple[n
     y_train, y_val = y[:num_train, :], y[num_train:, :]
     return x_train, x_val, y_train, y_val
 
-def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float = 0.001, valid_ratio: float = 0.1, loss_func: callable = mse) -> tuple[np.ndarray, np.ndarray, float]:
+def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float = 0.01, valid_ratio: float = 0.1, loss_func: callable = mse) -> tuple[np.ndarray, np.ndarray, float]:
     """
-    Fits a linear regression function to the data given.
+    Fits a linear regression function to the data given with stochastic gradient descent. 
 
     Parameters
     ----------
@@ -85,18 +84,24 @@ def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float
         
         for epoch in pbar:
             
-            # computing loss
-            y_pred = x_train @ w + b
-            loss = loss_func(y_train, y_pred)
-            # calculating the gradient
-            e = np.square(y_train - y_pred)
-            db = (-2/n) * np.sum(e)
-            dw = (-2/n) * np.sum(e @ x_train)
-            # update parameters
-            w = w - lr * dw
-            b = b - lr * db
+            total_loss = 0
+            for i in range(len(x_train)):
+                # computing loss
+                y_pred = np.dot(w.T, x_train[i]) + b
+                loss = loss_func(y_train[i], y_pred)
+                total_loss += loss
+                # calculating the gradient
+                e = y_train[i] - x_train[i] @ w - b
+                db = (-2/n) * np.sum(e)
+                dw = (-2/n) * np.sum(x_train[i] * e)
+                # update parameters
+                w = w - lr * dw
+                b = b - lr * db
             
-            pbar.set_postfix_str(f"Epoch: {epoch + 1}, Avg_loss: {loss:.4f}")
+            # calculate average loss for the epoch
+            avg_loss = total_loss / n
+            pbar.set_postfix_str(f"Epoch: {epoch + 1}, Avg_loss: {avg_loss:.4f}")
+
     
     # validation
     y_pred = x_val @ w + b
@@ -116,12 +121,8 @@ def main():
     b = np.random.randn(1)
     Y = X @ W + b
     
-    # an alternate version which is a sanity check, where Y is a quadratic function with noise
-    # Y = 5 * X**2 + 2 * X + 1 + np.random.randn(n, 1) 
-
-    weight, bias, loss = linear_regression(X, Y, epochs=1000)
+    weight, bias, loss = linear_regression(X, Y, epochs=100, lr=2)
     print(weight, bias, loss)
-    
     
 if __name__ == "__main__":
     main()
