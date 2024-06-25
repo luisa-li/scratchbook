@@ -22,9 +22,9 @@ def mse(y_true: np.ndarray, y_pred: np.array) -> float:
     return np.sum(np.square(y_true - y_pred)) / y_true.shape[0]
 
 
-def train_val_split(x: np.ndarray, y: np.ndarray, valid_ratio: float) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: 
+def train_test_split(x: np.ndarray, y: np.ndarray, test_ratio: float) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: 
     """
-    Splits the data `x` and `y` into train and validation splits. 
+    Splits the data `x` and `y` into train and test splits. 
     n is the number of samples and k is the number of features. 
 
     Parameters
@@ -33,21 +33,21 @@ def train_val_split(x: np.ndarray, y: np.ndarray, valid_ratio: float) -> tuple[n
         Data `x` of shape (n, k)
     y : np.ndarray
         Data `y` of shape (n, 1)
-    valid_ratio : float
-        Fraction of the data used for validation. 
+    test_ratio : float
+        Fraction of the data used for testing. 
 
     Returns
     -------
     tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
-        x_train, x_val, y_train, y_val, respectively.
+        x_train, x_test, y_train, y_test, respectively.
     """
     n = x.shape[0]
-    num_train = n - int(valid_ratio * n)
-    x_train, x_val = x[:num_train, :], x[num_train:, :]
-    y_train, y_val = y[:num_train, :], y[num_train:, :]
-    return x_train, x_val, y_train, y_val
+    num_train = n - int(test_ratio * n)
+    x_train, x_test = x[:num_train, :], x[num_train:, :]
+    y_train, y_test = y[:num_train, :], y[num_train:, :]
+    return x_train, x_test, y_train, y_test
 
-def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float = 0.01, valid_ratio: float = 0.1, loss_func: callable = mse) -> tuple[np.ndarray, np.ndarray, float]:
+def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float = 0.01, test_ratio: float = 0.1, loss_func: callable = mse) -> tuple[np.ndarray, np.ndarray, float]:
     """
     Fits a linear regression function to the data given with stochastic gradient descent. 
 
@@ -61,8 +61,8 @@ def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float
         Number of epochs, by default 100
     lr : float, optional
         Learning rate for gradient descent, by default 0.001
-    valid_ratio : float, optional
-        Fraction of data used in the validation, by default 0.1
+    test_ratio : float, optional
+        Fraction of data used in the testing, by default 0.1
     loss_func : callable, optional
         Loss function, by default mean squared error
 
@@ -77,8 +77,8 @@ def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float
     w = np.random.randn(k, 1)
     b = np.random.randn(1)
 
-    # getting train and val splits for both x and y
-    x_train, x_val, y_train, y_val = train_val_split(x, y, valid_ratio)
+    # getting train and test splits for both x and y
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_ratio)
 
     with trange(epochs, desc="Training Epochs") as pbar:
         
@@ -103,9 +103,9 @@ def linear_regression(x: np.ndarray, y: np.ndarray, epochs: int = 100, lr: float
             pbar.set_postfix_str(f"Epoch: {epoch + 1}, Avg_loss: {avg_loss:.4f}")
 
     
-    # validation
-    y_pred = x_val @ w + b
-    loss = loss_func(y_val, y_pred)
+    # testing
+    y_pred = x_test @ w + b
+    loss = loss_func(y_test, y_pred)
 
     return (w, b, loss)
 
