@@ -1,3 +1,5 @@
+"""Linear regression with stochastic gradient descent"""
+
 import numpy as np 
 from tqdm import trange
 
