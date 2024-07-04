@@ -1,3 +1,5 @@
+"""This is technically not a ML anything, this was a cool math problem from class, which I coded up something so I didn't have to do it by hand."""
+
 from itertools import combinations
 
 def all_combs(n):
