@@ -37,6 +37,6 @@ class Vocab:
     
     @property
     def unk(self):
-        return self.token_ti_idx['<unk>']
+        return self.token_to_idx['<unk>']
         
     
