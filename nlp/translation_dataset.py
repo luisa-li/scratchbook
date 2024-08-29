@@ -1,8 +1,6 @@
 import torch
 from vocab import Vocab
 from torch.utils.data import Dataset, DataLoader
-import numpy as np 
-import math 
 
 class FraEngDataset(Dataset):
     
